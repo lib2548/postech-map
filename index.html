@@ -2,14 +2,13 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>POSTECH 서가맵 테스트</title>
+    <title>POSTECH 서가맵 테스트 (파친코 포함)</title>
     <style>
         body { margin: 0; padding: 20px; font-family: sans-serif; text-align: center; background-color: #f4f7f9; }
         .map-container { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px; display: inline-block; width: 90%; max-width: 800px; }
         #info { padding: 15px; font-size: 1.2em; font-weight: bold; color: #d32f2f; background: #fff3f3; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffcdd2; }
         .bg-map { fill: #eeeeee; stroke: #bcbcbc; stroke-width: 1px; }
         .shelf-line { stroke: #555555; stroke-width: 6px; stroke-linecap: round; transition: all 0.3s; }
-        /* 빨간색 강조 효과 */
         .highlight { stroke: #ff0000 !important; stroke-width: 18px !important; filter: drop-shadow(0 0 5px rgba(255,0,0,0.6)); }
     </style>
 </head>
@@ -17,18 +16,13 @@
 
     <div class="map-container">
         <h2 style="color:#005a92; margin-top:0;">📍 박태준학술정보관 서가맵 (3F)</h2>
-        <div id="info">🔍 검색 예시: 주소 뒤에 ?cn=DS701 을 붙여보세요.</div>
+        <div id="info">🔍 Alma 연동 테스트 중...</div>
 
         <svg viewBox="0 0 622 548" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
             <path class="bg-map" d="M597.15,37.08v-18.96h-208c-102.52-38.52-172.44,0-172.44,0H69.89l.17,46.96h-4.3c-5.45-10.81-16.64-18.22-29.57-18.22-18.29,0-33.11,14.82-33.11,33.11s14.82,33.11,33.11,33.11c12.57,0,23.51-7.01,29.11-17.32l104.72.42c-7.07,6.8-13.69,14.06-19.82,21.73-27.39,29.82-34.97,54.28-34.97,54.28l-13.67-.89-13.21,49.67,12.22,3.96c-6.65,36.6,1.17,67.46,4.53,78.25.29,1.44.59,2.87.9,4.29L5.15,342.27l12.44,42.67-16.59,5.33v156.44l212.15-68.74-1.19,7.7c74.07,28.44,148.15,7.11,148.15,7.11,56.78-8.31,101-45.94,127.97-75.8,39.89-40.74,64.5-96.51,64.5-158.04,0-11.87-.92-23.52-2.68-34.89-2.07-20.08-6.24-39.19-12.34-55.87-8.99-26.74-22.4-50.68-39.38-70.07h98.37v-6.52h24.3v-54.52h-23.7Z"/>
             
             <g id="shelves">
                 <line id="3F-301" class="shelf-line" x1="167.1" y1="270.86" x2="123.63" y2="266.46" />
-                <line id="3F-302" class="shelf-line" x1="167.92" y1="254.97" x2="124.45" y2="250.62" />
-                <line id="3F-303" class="shelf-line" x1="168.82" y1="243.39" x2="125.61" y2="236.94" />
-                <line id="3F-304" class="shelf-line" x1="171.34" y1="230.74" x2="128.27" y2="223.41" />
-                <line id="3F-305" class="shelf-line" x1="175.99" y1="217.6" x2="133.58" y2="207.11" />
-                <line id="3F-306" class="shelf-line" x1="179.23" y1="207.41" x2="137.82" y2="193.5" />
                 <line id="3F-311" class="shelf-line" x1="222.49" y1="146.71" x2="199.24" y2="116.69" />
                 <line id="3F-314" class="shelf-line" x1="250.48" y1="129.73" x2="240.02" y2="106.86" />
             </g>
@@ -36,12 +30,10 @@
     </div>
 
     <script>
-        // 정정 씨가 조사한 실제 청구기호 매핑 데이터
         const shelfData = [
             { id: "3F-301", start: "A13", end: "DS701" },
-            { id: "3F-302", start: "DS701", end: "HA1" },
-            { id: "3F-303", start: "HA1", end: "HB5" },
-            { id: "3F-311", start: "P", end: "Q" },
+            // 파친코(PS3612...)를 포함하는 범위로 수정
+            { id: "3F-311", start: "P", end: "QA" }, 
             { id: "3F-314", start: "900", end: "999" }
         ];
 
@@ -58,14 +50,12 @@
                 const el = document.getElementById(found.id);
                 if (el) {
                     el.classList.add('highlight');
-                    // 애니메이션 효과 추가
                     el.innerHTML = '<animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />';
                 }
             } else {
-                info.innerText = `❌ 청구기호 [${cn}]의 위치를 찾을 수 없습니다. (테스트 구역 외)`;
+                info.innerText = `❌ 청구기호 [${cn}]의 위치를 찾을 수 없습니다. (3F-311 서가 근처인지 확인해 보세요)`;
             }
         }
-        // 페이지 로드 후 실행
         window.onload = runMap;
     </script>
 </body>
