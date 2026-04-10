@@ -9,15 +9,16 @@
         #status-bar { padding: 15px; font-size: 1.1em; font-weight: bold; color: #d32f2f; background: #fff3f3; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffcdd2; transition: all 0.3s; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        /* 🚀 핵심 수정: 브라우저 충돌을 일으키는 filter(그림자) 효과 삭제 */
         .highlight { 
             stroke: #ff0000 !important; 
             stroke-width: 15px !important; 
-            filter: drop-shadow(0 0 8px rgba(255,0,0,0.7)); 
             transition: all 0.3s; 
             animation: blink 0.8s infinite;
         }
         svg { width: 100%; height: auto; }
-        svg text { font-family: sans-serif !important; }
+        svg text { font-family: sans-serif !important; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -29,7 +30,6 @@
         <svg id="_레이어_1" data-name="레이어 1" xmlns="http://www.w3.org/2000/svg" width="621.85" height="548.09" viewBox="0 0 621.85 548.09">
           <defs>
             <style>
-              /* 원본 스타일 완벽 복구 */
               .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12 { stroke-miterlimit: 10; }
               .cls-1, .cls-2, .cls-7, .cls-8, .cls-10, .cls-11, .cls-12 { fill: none; }
               .cls-1, .cls-3, .cls-5, .cls-6, .cls-7, .cls-9 { stroke: #000; }
@@ -39,7 +39,7 @@
               .cls-15, .cls-4 { font-family: KoPubDotumBold, KoPubDotumBold; }
               .cls-15, .cls-16 { font-size: 12px; }
               .cls-4 { fill: #c9005f; font-size: 9px; stroke-width: .25px; }
-              .cls-4, .cls-10 { stroke: #c9005f; } /* <-- 누락되었던 핑크색 복구! */
+              .cls-4, .cls-10 { stroke: #c9005f; } 
               .cls-5, .cls-12 { stroke-width: 4px; }
               .cls-6, .cls-7, .cls-9, .cls-10, .cls-11 { stroke-width: 2px; }
               .cls-8 { stroke-width: 3px; stroke: #f2f2f2; }
@@ -327,8 +327,7 @@
 
     </div>
 
-   <script>
-        // 77개 전체 서가 데이터 유지
+    <script>
         const shelfMapping = [
             { id: "_3F-301", start: "A", end: "AC999" }, { id: "_3F-302", start: "AD", end: "AF999" },
             { id: "_3F-303", start: "AG", end: "AI999" }, { id: "_3F-304", start: "AJ", end: "AL999" },
@@ -368,18 +367,6 @@
         ];
 
         window.onload = function() {
-            const svgRoot = document.getElementById('_레이어_1');
-            
-            // 🚀 [해결 로직] 핑크색 글자(.cls-4)가 있는 그룹을 찾아 무조건 맨 위로 끌어올립니다.
-            document.querySelectorAll('.cls-4').forEach(textEl => {
-                const group = textEl.parentNode;
-                if(group && group.tagName.toLowerCase() === 'g') {
-                    // 코드를 통째로 SVG의 제일 끝으로 이동시켜 덮이지 않게 만듭니다.
-                    svgRoot.appendChild(group); 
-                }
-            });
-
-            // 🚀 검색 및 강조 로직
             const rawCN = new URLSearchParams(window.location.search).get('cn');
             const status = document.getElementById('status-bar');
             if (!rawCN) return;
@@ -390,7 +377,19 @@
             if (foundShelf) {
                 status.innerHTML = `✅ 청구기호 [${rawCN}] 위치: <span style="color:#005a92;">${foundShelf.id.replace('_', '')} 서가</span>`;
                 const el = document.getElementById(foundShelf.id);
-                if (el) el.classList.add('highlight');
+                if (el) {
+                    el.classList.add('highlight');
+                    
+                    // 🚀 [글자 덮임 완벽 방지 로직]
+                    // 하이라이트된 요소를 DOM 구조상 글자(.cls-4) 그룹들보다 앞(뒤로 깔리게)으로 보냅니다.
+                    const svgRoot = document.getElementById('_레이어_1');
+                    document.querySelectorAll('.cls-4, .cls-10').forEach(node => {
+                        const group = node.closest('g');
+                        if (group && group.parentNode === svgRoot) {
+                            svgRoot.appendChild(group); // 텍스트 그룹을 강제로 맨 위로 다시 끌어올림
+                        }
+                    });
+                }
             } else {
                 status.innerText = `❌ 청구기호 [${rawCN}] 위치를 찾을 수 없습니다. (3층 구역 외)`;
             }
