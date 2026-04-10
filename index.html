@@ -327,7 +327,8 @@
 
     </div>
 
-    <script>
+   <script>
+        // 77개 전체 서가 데이터 유지
         const shelfMapping = [
             { id: "_3F-301", start: "A", end: "AC999" }, { id: "_3F-302", start: "AD", end: "AF999" },
             { id: "_3F-303", start: "AG", end: "AI999" }, { id: "_3F-304", start: "AJ", end: "AL999" },
@@ -367,6 +368,18 @@
         ];
 
         window.onload = function() {
+            const svgRoot = document.getElementById('_레이어_1');
+            
+            // 🚀 [해결 로직] 핑크색 글자(.cls-4)가 있는 그룹을 찾아 무조건 맨 위로 끌어올립니다.
+            document.querySelectorAll('.cls-4').forEach(textEl => {
+                const group = textEl.parentNode;
+                if(group && group.tagName.toLowerCase() === 'g') {
+                    // 코드를 통째로 SVG의 제일 끝으로 이동시켜 덮이지 않게 만듭니다.
+                    svgRoot.appendChild(group); 
+                }
+            });
+
+            // 🚀 검색 및 강조 로직
             const rawCN = new URLSearchParams(window.location.search).get('cn');
             const status = document.getElementById('status-bar');
             if (!rawCN) return;
