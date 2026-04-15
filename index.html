@@ -1175,23 +1175,23 @@
 
     <script>
         // 🚀 1. 특수 위치 매핑 (엑셀 분석 결과)
-       const specialLocations = {
-    // 🚀 실제 페이지에 표시되는 한글 명칭을 그대로 등록합니다.
-    "신착서가 (2층)": { floor: 2, ids: ["2F_new1", "2F_new2"] },
-    "단행본 (3층)": { floor: 3, ids: [] }, // 이건 청구기호 로직으로 이동
-    "지정도서 (3층)": { floor: 3, ids: ["3F_Reserve"] },
-    "제본저널 (4층)": { floor: 4, ids: ["4F_bound"] },
-    "참고자료 (4층)": { floor: 4, ids: ["4F_REF"] },
-    
-    // 만약의 경우를 대비해 코드값도 유지
-    "c2n": { floor: 2, ids: ["2F_new1", "2F_new2"] }
+       // 🚀 1. 특수 위치 매핑 (한글 명칭 + 알마 코드 통합)
+        const specialLocations = {
+            // --- 한글 명칭 (알마 상세페이지 표시용) ---
+            "신착서가 (2층)": { floor: 2, ids: ["2F_new1", "2F_new2"] },
+            "단행본 (3층)": { floor: 3, ids: [] }, 
+            "지정도서 (3층)": { floor: 3, ids: ["3F_Reserve"] },
+            "제본저널 (4층)": { floor: 4, ids: ["4F_bound"] },
+            "참고자료 (4층)": { floor: 4, ids: ["4F_REF"] },
+            
+            // --- 알마 코드값 (시스템 파라미터용) ---
+            "c2n": { floor: 2, ids: ["2F_new1", "2F_new2"] },
             "c3a": { floor: 2, ids: ["2F_desk"] },
             "c2a": { floor: 2, ids: ["2F_desk"] },
             "v_meta": { floor: 2, ids: ["2F_desk"] },
             "faculty": { floor: 2, ids: ["2F_CUA"] },
             "phistory": { floor: 2, ids: ["2F_CUA"] },
             "rec100": { floor: 2, ids: ["2F_CUA"] },
-            "c2n": { floor: 2, ids: ["2F_new1", "2F_new2"] }, // 👈 요청하신 다중 하이라이트
             "c2sb1": { floor: 2, ids: ["2F-CollectionA"] },
             "c4b": { floor: 4, ids: ["4F_bound"] },
             "c4r": { floor: 4, ids: ["4F_REF"] },
