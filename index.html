@@ -2389,16 +2389,28 @@
 
 
 <script>
-    // 🚀 1. 특수 위치 매핑 (언더바 '_' 필수 포함)
+// 🚀 1. 특수 위치 매핑 (키워드 부분 일치 적용)
     const specialLocations = {
-        "신착서가(2층)": { floor: 2, ids: ["_2F_new1", "_2F_new2"] },
-        "신착서가 (2층)": { floor: 2, ids: ["_2F_new1", "_2F_new2"] },
-        "지정도서(3층)": { floor: 3, ids: ["_3F_Reserve"] },
-        "지정도서 (3층)": { floor: 3, ids: ["_3F_Reserve"] },
-        "제본저널(4층)": { floor: 4, ids: ["_4F_bound"] },
-        "제본저널 (4층)": { floor: 4, ids: ["_4F_bound"] },
-        "참고자료(4층)": { floor: 4, ids: ["_4F_REF"] },
-        "참고자료 (4층)": { floor: 4, ids: ["_4F_REF"] },
+        // --- 신착도서 ---
+        "신착서가": { floor: 2, ids: ["_2F_new1", "_2F_new2"] },
+        
+        // --- 삼각서가 ---
+        "삼각서가A": { floor: 2, ids: ["_2F_CUA"] },
+        "삼각서가B": { floor: 2, ids: ["_2F_CUB"] },
+        "삼각서가C": { floor: 2, ids: ["_2F_CUC1"] },
+        "삼각서가": { floor: 2, ids: ["_2F_CUA", "_2F_CUB", "_2F_CUC1"] }, // A,B,C 구분이 없을 때 전체 하이라이트
+        
+        // --- 원형서가 ---
+        "원형서가 (2F) A": { floor: 2, ids: ["_2F-CollectionA"] },
+        "원형서가 (2F) B": { floor: 2, ids: ["_2F-CollectionB"] },
+        "원형서가": { floor: 2, ids: ["_2F-CollectionA", "_2F-CollectionB"] }, // A,B 구분이 없을 때 전체 하이라이트
+
+        // --- 3층 / 4층 특수 서가 ---
+        "지정도서": { floor: 3, ids: ["_3F_Reserve"] }, 
+        "제본저널": { floor: 4, ids: ["_4F_bound"] },   
+        "참고자료": { floor: 4, ids: ["_4F_REF"] },
+
+        // --- 알마 영문 코드값 (예비용) ---
         "c2n": { floor: 2, ids: ["_2F_new1", "_2F_new2"] },
         "c3a": { floor: 2, ids: ["_2F_desk"] },
         "c2a": { floor: 2, ids: ["_2F_desk"] },
