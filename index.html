@@ -9,9 +9,29 @@
         #status-bar { padding: 15px; font-size: 1.1em; font-weight: bold; color: #d32f2f; background: #fff3f3; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffcdd2; }
         .map-layer { display: none; width: 100%; height: auto; }
         .active { display: block !important; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .highlight { stroke: #ff0000 !important; stroke-width: 15px !important; filter: drop-shadow(0 0 8px rgba(255,0,0,0.7)); animation: blink 0.8s infinite; }
-        svg text { font-family: sans-serif !important; }
+       @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        /* 1. 하이라이트 효과: 어떤 스타일보다 우선하도록 !important를 떡칠합니다 */
+        .highlight { 
+            stroke: #ff0000 !important; 
+            stroke-width: 15px !important; 
+            fill: #ff0000 !important; 
+            fill-opacity: 0.6 !important;
+            filter: drop-shadow(0 0 8px rgba(255,0,0,0.7)); 
+            animation: blink 0.8s infinite; 
+        }
+
+        /* 2. 글자색 고정: 다른 층의 검은색 스타일이 침범하지 못하게 핑크색(#c9005f) 강제 고정 */
+        svg text { 
+            fill: #c9005f !important; 
+            font-family: sans-serif !important; 
+            font-weight: bold !important;
+        }
+
+        /* 3. 화살표 선 고정: 화살표가 검게 변했다면 이 부분도 추가해 주세요 */
+        .cls-10 { 
+            stroke: #c9005f !important; 
+        }
     </style>
 </head>
 <body>
@@ -1173,79 +1193,92 @@
 </svg> </div>
     </div>
 
-    <script>
-        // 🚀 1. 특수 위치 매핑 (엑셀 분석 결과)
-       // 🚀 1. 특수 위치 매핑 (한글 명칭 + 알마 코드 통합)
-        const specialLocations = {
-            // --- 한글 명칭 (알마 상세페이지 표시용) ---
-            "신착서가 (2층)": { floor: 2, ids: ["2F_new1", "2F_new2"] },
-            "단행본 (3층)": { floor: 3, ids: [] }, 
-            "지정도서 (3층)": { floor: 3, ids: ["3F_Reserve"] },
-            "제본저널 (4층)": { floor: 4, ids: ["4F_bound"] },
-            "참고자료 (4층)": { floor: 4, ids: ["4F_REF"] },
-            
-            // --- 알마 코드값 (시스템 파라미터용) ---
-            "c2n": { floor: 2, ids: ["2F_new1", "2F_new2"] },
-            "c3a": { floor: 2, ids: ["2F_desk"] },
-            "c2a": { floor: 2, ids: ["2F_desk"] },
-            "v_meta": { floor: 2, ids: ["2F_desk"] },
-            "faculty": { floor: 2, ids: ["2F_CUA"] },
-            "phistory": { floor: 2, ids: ["2F_CUA"] },
-            "rec100": { floor: 2, ids: ["2F_CUA"] },
-            "c2sb1": { floor: 2, ids: ["2F-CollectionA"] },
-            "c4b": { floor: 4, ids: ["4F_bound"] },
-            "c4r": { floor: 4, ids: ["4F_REF"] },
-            "c3r": { floor: 3, ids: ["3F_Reserve"] }
-        };
+   <script>
+    // 🚀 1. 특수 위치 매핑 (한글 명칭 + 알마 코드 통합)
+    const specialLocations = {
+        "신착서가(2층)": { floor: 2, ids: ["2F_new1", "2F_new2"] },
+        "신착서가 (2층)": { floor: 2, ids: ["2F_new1", "2F_new2"] },
+        "지정도서(3층)": { floor: 3, ids: ["3F_Reserve"] },
+        "지정도서 (3층)": { floor: 3, ids: ["3F_Reserve"] },
+        "제본저널(4층)": { floor: 4, ids: ["4F_bound"] },
+        "제본저널 (4층)": { floor: 4, ids: ["4F_bound"] },
+        "참고자료(4층)": { floor: 4, ids: ["4F_REF"] },
+        "참고자료 (4층)": { floor: 4, ids: ["4F_REF"] },
+        "c2n": { floor: 2, ids: ["2F_new1", "2F_new2"] },
+        "c3a": { floor: 2, ids: ["2F_desk"] },
+        "c2a": { floor: 2, ids: ["2F_desk"] },
+        "v_meta": { floor: 2, ids: ["2F_desk"] },
+        "faculty": { floor: 2, ids: ["2F_CUA"] },
+        "phistory": { floor: 2, ids: ["2F_CUA"] },
+        "rec100": { floor: 2, ids: ["2F_CUA"] },
+        "c2sb1": { floor: 2, ids: ["2F-CollectionA"] },
+        "c4b": { floor: 4, ids: ["4F_bound"] },
+        "c4r": { floor: 4, ids: ["4F_REF"] },
+        "c3r": { floor: 3, ids: ["3F_Reserve"] }
+    };
 
-        // 🚀 2. 이타카 대학 레퍼런스: 청구기호 정규화 엔진
-        function normalizeCN(cn) {
-            if (!cn) return "";
-            let out = cn.toUpperCase().replace(/\s+/g, '');
-            out = out.replace(/([A-Z]+)(\d+)/g, (m, p1, p2) => p1 + p2.padStart(5, '0'));
-            out = out.replace(/\.(\d+)/g, (m, p1) => p1.padEnd(5, '0'));
-            return out;
+    // 🚀 2. 이타카 대학 레퍼런스: 청구기호 정규화 엔진
+    function normalizeCN(cn) {
+        if (!cn) return "";
+        let out = cn.toUpperCase().replace(/\s+/g, '');
+        out = out.replace(/([A-Z]+)(\d+)/g, (m, p1, p2) => p1 + p2.padStart(5, '0'));
+        out = out.replace(/\.(\d+)/g, (m, p1) => p1.padEnd(5, '0'));
+        return out;
+    }
+
+    // 🚀 3. 층 결정 로직 (포스텍 실제 분류 기준에 맞춰 수정 가능)
+    function determineFloor(cn) {
+        const firstChar = cn.charAt(0).toUpperCase();
+        // A-L은 3층, M-Z 및 숫자는 4층
+        return (firstChar >= 'A' && firstChar <= 'L') ? 3 : 4;
+    }
+
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        
+        // ✨ 핵심 보정: decodeURIComponent를 써야 "신착서가 (2층)" 같은 한글 파라미터를 정확히 읽습니다.
+        let rawLOC = params.get('loc') ? decodeURIComponent(params.get('loc')).trim() : "";
+        const rawCN = params.get('cn') || "";
+        const status = document.getElementById('status-bar');
+
+        let targetFloor = 3; // 기본 3층
+        let targetIds = [];
+
+        // [단계 1] 특수 위치 우선 확인
+        if (rawLOC && specialLocations[rawLOC]) {
+            targetFloor = specialLocations[rawLOC].floor;
+            targetIds = specialLocations[rawLOC].ids;
+            status.innerHTML = `✅ 위치 안내: <span style="color:#005a92;">${rawLOC}</span>`;
+        } 
+        // [단계 2] 일반 도서일 경우 청구기호로 층 판별
+        else if (rawCN) {
+            targetFloor = determineFloor(rawCN);
+            status.innerHTML = `✅ 청구기호 [${rawCN}] 위치 안내`;
+            // (여기에 3층/4층 세부 서가 mapping 로직 추가 가능)
         }
 
-        // 🚀 3. 층 결정 로직 (청구기호 기준)
-        function determineFloor(cn) {
-            const firstChar = cn.charAt(0).toUpperCase();
-            // 예시: A-L은 3층, M-Z 및 숫자는 4층 (실제 운영 지침에 맞게 수정 가능)
-            return (firstChar >= 'A' && firstChar <= 'L') ? 3 : 4;
-        }
-
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            const rawCN = params.get('cn') || "";
-            const rawLOC = params.get('loc') || "";
-            const status = document.getElementById('status-bar');
-
-            let targetFloor = 3;
-            let targetIds = [];
-
-            // [우선순위 1] 특수 위치(Location) 체크
-            if (rawLOC && specialLocations[rawLOC]) {
-                targetFloor = specialLocations[rawLOC].floor;
-                targetIds = specialLocations[rawLOC].ids;
-                status.innerHTML = `✅ 특수 위치: 3층 구역 외 별도 코너`;
-            } 
-            // [우선순위 2] 청구기호 기반 일반 서가 체크
-            else if (rawCN) {
-                targetFloor = determineFloor(rawCN);
-                // 여기서 기존 shelfMapping 비교 로직을 넣어 해당 서가 ID를 targetIds에 push
-                // (3층/4층 서가 데이터가 많으므로 floor별로 mapping 데이터를 별도 관리 추천)
-                status.innerHTML = `✅ 청구기호 [${rawCN}] 위치 안내`;
-            }
-
-            // [화면 처리] 해당 층 활성화 및 하이라이트
-            document.getElementById(`svg-${targetFloor}f`).classList.add('active');
+        // [화면 처리] 모든 층 일단 숨기고 해당 층만 활성화
+        document.querySelectorAll('.map-layer').forEach(div => div.classList.remove('active'));
+        const activeLayer = document.getElementById(`svg-${targetFloor}f`);
+        
+        if (activeLayer) {
+            activeLayer.classList.add('active');
             document.getElementById('floor-title').innerText = `📍 ${targetFloor}층 위치 안내`;
             
-            targetIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('highlight');
-            });
-        };
-    </script>
+            // [불 켜기] SVG가 그려진 직후 정확히 ID를 찾도록 0.1초 딜레이를 줍니다.
+            setTimeout(() => {
+                targetIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('highlight');
+                        console.log("Success: Highlight applied to", id);
+                    } else {
+                        console.error("Error: Cannot find SVG ID", id);
+                    }
+                });
+            }, 100);
+        }
+    };
+</script>
 </body>
 </html>
